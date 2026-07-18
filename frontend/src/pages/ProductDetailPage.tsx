@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, ShoppingBag, PackageOpen } from 'lucide-react';
 import { useProductById } from '../hooks/useProducts';
+import { useAddToCart } from '../hooks/useCart';
 import { VariantSelector } from '../components/product/VariantSelector';
 import { Button } from '../components/ui/Button';
 import { Spinner } from '../components/ui/Spinner';
@@ -13,6 +14,7 @@ export function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
   const productId = Number(id);
   const { data: product, isLoading, isError, error, refetch } = useProductById(productId);
+  const addToCartMutation = useAddToCart();
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [addedToCart, setAddedToCart] = useState(false);
 
@@ -48,9 +50,19 @@ export function ProductDetailPage() {
     ? formatCurrency(product.variants[0].totalPrice)
     : `From ${formatCurrency(Math.min(...product.variants.map((v) => v.totalPrice)))}`;
 
+  const variantToAdd = selectedVariant || (product.variants.length === 1 ? product.variants[0] : null);
+
   const handleAddToCart = () => {
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
+    if (!variantToAdd) return;
+    addToCartMutation.mutate(
+      { variantId: variantToAdd.id, quantity: 1 },
+      {
+        onSuccess: () => {
+          setAddedToCart(true);
+          setTimeout(() => setAddedToCart(false), 2000);
+        },
+      }
+    );
   };
 
   return (
@@ -99,8 +111,9 @@ export function ProductDetailPage() {
             <Button
               size="lg"
               className="flex-1"
-              disabled={!selectedVariant && product.variants.length > 1}
+              disabled={!variantToAdd || addToCartMutation.isPending}
               onClick={handleAddToCart}
+              loading={addToCartMutation.isPending}
             >
               {addedToCart ? 'Added!' : 'Add to Cart'}
             </Button>
