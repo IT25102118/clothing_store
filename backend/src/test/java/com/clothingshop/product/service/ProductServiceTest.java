@@ -1,6 +1,7 @@
 package com.clothingshop.product.service;
 
 import com.clothingshop.common.exception.ResourceNotFoundException;
+import com.clothingshop.product.dto.ProductResponse;
 import com.clothingshop.product.entity.Category;
 import com.clothingshop.product.entity.Product;
 import com.clothingshop.product.entity.ProductVariant;
@@ -48,7 +49,7 @@ class ProductServiceTest {
         PageRequest pageable = PageRequest.of(0, 10, Sort.by("name").ascending());
         when(productRepository.findByIsActiveTrue(pageable)).thenReturn(new PageImpl<>(List.of(product)));
 
-        Page<?> result = productService.getProducts(0, 10, null, null);
+        Page<ProductResponse> result = productService.getProducts(0, 10, null, null);
 
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getContent().get(0).getName()).isEqualTo("Classic Tee");
@@ -62,7 +63,7 @@ class ProductServiceTest {
         when(productRepository.findByCategoryIdAndIsActiveTrue(1L, pageable))
                 .thenReturn(new PageImpl<>(List.of(product)));
 
-        Page<?> result = productService.getProducts(0, 10, 1L, null);
+        Page<ProductResponse> result = productService.getProducts(0, 10, 1L, null);
 
         assertThat(result.getContent()).hasSize(1);
     }
@@ -75,7 +76,7 @@ class ProductServiceTest {
         when(productRepository.searchByName("tee", pageable))
                 .thenReturn(new PageImpl<>(List.of(product)));
 
-        Page<?> result = productService.getProducts(0, 10, null, "tee");
+        Page<ProductResponse> result = productService.getProducts(0, 10, null, "tee");
 
         assertThat(result.getContent()).hasSize(1);
     }
