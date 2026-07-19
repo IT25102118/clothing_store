@@ -13,7 +13,6 @@ type Tab = 'products' | 'orders';
 
 export function AdminDashboardPage() {
   const [tab, setTab] = useState<Tab>('products');
-  const queryClient = useQueryClient();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

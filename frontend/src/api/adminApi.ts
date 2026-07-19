@@ -1,6 +1,7 @@
 import axiosInstance from './axiosInstance';
-import type { Product, VariantResponse } from '../types/product';
+import type { Product } from '../types/product';
 import type { Order } from '../types/order';
+import type { PageResponse } from '../types/product';
 
 export interface CreateProductRequest {
   name: string;
@@ -72,5 +73,5 @@ export const adminApi = {
     axiosInstance.get<Order[]>('/api/orders').then((r) => r.data),
 
   getProducts: () =>
-    axiosInstance.get<Product[]>('/api/products?size=100').then((r) => r.data.content),
+    axiosInstance.get<PageResponse<Product>>('/api/products?size=100').then((r) => r.data.content),
 };
